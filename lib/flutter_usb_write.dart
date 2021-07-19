@@ -66,10 +66,10 @@ class UsbEvent {
       "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
   /// either ACTION_USB_ATTACHED or ACTION_USB_DETACHED
-  String event;
+  String event = "";
 
   /// The device for which the event was fired.
-  UsbDevice device;
+  UsbDevice? device;
 
   @override
   String toString() {
@@ -78,7 +78,7 @@ class UsbEvent {
 
   Map<String, dynamic> toJson() => {
         'event': event,
-        'device': device.toJson(),
+        'device': device?.toJson(),
       };
 }
 
@@ -102,7 +102,7 @@ class UsbDevice {
   final int deviceId;
 
   /// The Serial number from the USB device.
-  final String serial;
+  final String? serial;
 
   UsbDevice(this.vid, this.pid, this.productName, this.manufacturerName,
       this.deviceId, this.serial);
@@ -137,7 +137,7 @@ class FlutterUsbWrite {
           const EventChannel('flutter_usb_write/events');
       _instance = FlutterUsbWrite.private(methodChannel, eventChannel);
     }
-    return _instance;
+    return _instance!;
   }
 
   /// This constructor is only used for testing and shouldn't be accessed by
@@ -145,11 +145,11 @@ class FlutterUsbWrite {
   @visibleForTesting
   FlutterUsbWrite.private(this._methodChannel, this._eventChannel);
 
-  static FlutterUsbWrite _instance;
+  static FlutterUsbWrite? _instance;
 
   final MethodChannel _methodChannel;
   final EventChannel _eventChannel;
-  Stream<UsbEvent> _eventStream;
+  Stream<UsbEvent>? _eventStream;
 
   Stream<UsbEvent> get usbEventStream {
     if (_eventStream == null) {
@@ -161,7 +161,7 @@ class FlutterUsbWrite {
         return msg;
       });
     }
-    return _eventStream;
+    return _eventStream!;
   }
 
   /// Returns a list of UsbDevices currently plugged in.
@@ -172,9 +172,9 @@ class FlutterUsbWrite {
 
   /// Opens connection to device with specified deviceId, or with specified VendorId and ProductId
   Future<UsbDevice> open({
-    int deviceId,
-    int vendorId,
-    int productId,
+    int? deviceId,
+    int? vendorId,
+    int? productId,
   }) async {
     Map<String, dynamic> args = {
       "vid": vendorId,
@@ -232,20 +232,15 @@ class FlutterUsbWrite {
   Exception _getTypedException(PlatformException e) {
     switch (e.code) {
       case "DEVICE_NOT_FOUND_ERROR":
-        return DeviceNotFoundException(e.code, e.message, e.details);
-        break;
+        return DeviceNotFoundException(e.code, e.message ?? "", e.details);
       case "INTERFACE_NOT_FOUND_ERROR":
-        return InterfaceNotFoundException(e.code, e.message, e.details);
-        break;
+        return InterfaceNotFoundException(e.code, e.message ?? "", e.details);
       case "ENDPOINT_NOT_FOUND_ERROR":
-        return EndpointNotFoundException(e.code, e.message, e.details);
-        break;
+        return EndpointNotFoundException(e.code, e.message ?? "", e.details);
       case "LIST_DEVICES_ERROR":
-        return ListDevicesException(e.code, e.message, e.details);
-        break;
+        return ListDevicesException(e.code, e.message ?? "", e.details);
       case "PERMISSION_ERROR":
-        return PermissionException(e.code, e.message, e.details);
-        break;
+        return PermissionException(e.code, e.message ?? "", e.details);
       default:
         return e;
     }
