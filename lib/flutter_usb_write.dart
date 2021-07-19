@@ -56,7 +56,7 @@ class PermissionException extends PlatformException {
 /*
 Copyright by Ron Bessems (https://github.com/altera2015/usbserial)
 */
-class UsbEvent {
+class FUWEvent {
   /// Event passed to usbEventStream when a USB device is attached.
   static const String ACTION_USB_ATTACHED =
       "android.hardware.usb.action.USB_DEVICE_ATTACHED";
@@ -69,11 +69,11 @@ class UsbEvent {
   String event = "";
 
   /// The device for which the event was fired.
-  UsbDevice? device;
+  FUWDevice? device;
 
   @override
   String toString() {
-    return "UsbEvent: $event, $device";
+    return "FUWEvent: $event, $device";
   }
 
   Map<String, dynamic> toJson() => {
@@ -85,10 +85,10 @@ class UsbEvent {
 /*
 Copyright by Ron Bessems (https://github.com/altera2015/usbserial)
 */
-/// UsbDevice holds the USB device information
+/// FUWDevice holds the USB device information
 ///
 /// This is used to determine which Usb Device to open.
-class UsbDevice {
+class FUWDevice {
   /// Vendor Id
   final int vid;
 
@@ -104,11 +104,11 @@ class UsbDevice {
   /// The Serial number from the USB device.
   final String? serial;
 
-  UsbDevice(this.vid, this.pid, this.productName, this.manufacturerName,
+  FUWDevice(this.vid, this.pid, this.productName, this.manufacturerName,
       this.deviceId, this.serial);
 
-  static UsbDevice fromJSON(dynamic json) {
-    return UsbDevice(json["vid"], json["pid"], json["productName"],
+  static FUWDevice fromJSON(dynamic json) {
+    return FUWDevice(json["vid"], json["pid"], json["productName"],
         json["manufacturerName"], json["deviceId"], json["serialNumber"]);
   }
 
@@ -123,7 +123,7 @@ class UsbDevice {
 
   @override
   String toString() {
-    return "UsbDevice: ${vid.toRadixString(16)}-${pid.toRadixString(16)} $productName, $manufacturerName $serial";
+    return "FUWDevice: ${vid.toRadixString(16)}-${pid.toRadixString(16)} $productName, $manufacturerName $serial";
   }
 }
 
@@ -149,14 +149,14 @@ class FlutterUsbWrite {
 
   final MethodChannel _methodChannel;
   final EventChannel _eventChannel;
-  Stream<UsbEvent>? _eventStream;
+  Stream<FUWEvent>? _eventStream;
 
-  Stream<UsbEvent> get usbEventStream {
+  Stream<FUWEvent> get usbEventStream {
     if (_eventStream == null) {
       _eventStream =
-          _eventChannel.receiveBroadcastStream().map<UsbEvent>((value) {
-        UsbEvent msg = UsbEvent();
-        msg.device = UsbDevice.fromJSON(value);
+          _eventChannel.receiveBroadcastStream().map<FUWEvent>((value) {
+        FUWEvent msg = FUWEvent();
+        msg.device = FUWDevice.fromJSON(value);
         msg.event = value["event"];
         return msg;
       });
@@ -164,14 +164,14 @@ class FlutterUsbWrite {
     return _eventStream!;
   }
 
-  /// Returns a list of UsbDevices currently plugged in.
-  Future<List<UsbDevice>> listDevices() async {
+  /// Returns a list of FWUDevices currently plugged in.
+  Future<List<FUWDevice>> listDevices() async {
     List<dynamic> devices = await _methodChannel.invokeMethod("listDevices");
-    return devices.map(UsbDevice.fromJSON).toList();
+    return devices.map(FUWDevice.fromJSON).toList();
   }
 
   /// Opens connection to device with specified deviceId, or with specified VendorId and ProductId
-  Future<UsbDevice> open({
+  Future<FUWDevice> open({
     int? deviceId,
     int? vendorId,
     int? productId,
@@ -183,7 +183,7 @@ class FlutterUsbWrite {
     };
     try {
       dynamic result = await _methodChannel.invokeMethod("open", args);
-      return UsbDevice.fromJSON(result);
+      return FUWDevice.fromJSON(result);
     } on PlatformException catch (e) {
       throw _getTypedException(e);
     }

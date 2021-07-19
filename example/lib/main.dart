@@ -15,9 +15,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FlutterUsbWrite _flutterUsbWrite = FlutterUsbWrite();
-  UsbEvent _lastEvent;
-  StreamSubscription<UsbEvent> _usbStateSubscription;
-  List<UsbDevice> _devices = [];
+  FUWEvent _lastEvent;
+  StreamSubscription<FUWEvent> _usbStateSubscription;
+  List<FUWDevice> _devices = [];
   int _connectedDeviceId;
   TextEditingController _textController =
       TextEditingController(text: "Hello world");
@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       _usbStateSubscription =
-          _flutterUsbWrite.usbEventStream.listen((UsbEvent event) async {
+          _flutterUsbWrite.usbEventStream.listen((FUWEvent event) async {
         setState(() {
           _lastEvent = event;
         });
@@ -145,7 +145,7 @@ class _MyAppState extends State<MyApp> {
 
   Future _getPorts() async {
     try {
-      List<UsbDevice> devices = await _flutterUsbWrite.listDevices();
+      List<FUWDevice> devices = await _flutterUsbWrite.listDevices();
       setState(() {
         _devices = devices;
       });
@@ -183,7 +183,7 @@ class _MyAppState extends State<MyApp> {
     return ports;
   }
 
-  Future<UsbDevice> _connect(UsbDevice device) async {
+  Future<FUWDevice> _connect(FUWDevice device) async {
     try {
       var result = await _flutterUsbWrite.open(
         vendorId: device.vid,

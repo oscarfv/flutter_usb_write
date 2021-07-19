@@ -18,10 +18,10 @@ void main() {
   FlutterUsbWrite flutterUsbWrite;
 
   TestWidgetsFlutterBinding.ensureInitialized();
-  UsbDevice device;
+  FUWDevice device;
 
   setUp(() {
-    device = UsbDevice(1046, 20497, "USB Portable Printer    ",
+    device = FUWDevice(1046, 20497, "USB Portable Printer    ",
         "STMicroelectronics", 1002, "Printer");
     methodChannel = MockMethodChannel();
     eventChannel = MockEventChannel();
@@ -124,15 +124,15 @@ void main() {
     });
 
     test('receive values', () async {
-      final StreamQueue<UsbEvent> queue =
-          StreamQueue<UsbEvent>(flutterUsbWrite.usbEventStream);
+      final StreamQueue<FUWEvent> queue =
+          StreamQueue<FUWEvent>(flutterUsbWrite.usbEventStream);
 
       Map<String, dynamic> msg1 = device.toJson();
-      msg1["event"] = UsbEvent.ACTION_USB_ATTACHED;
+      msg1["event"] = FUWEvent.ACTION_USB_ATTACHED;
 
-      var event1 = UsbEvent();
+      var event1 = FUWEvent();
       event1.device = device;
-      event1.event = UsbEvent.ACTION_USB_ATTACHED;
+      event1.event = FUWEvent.ACTION_USB_ATTACHED;
 
       controller.add(msg1);
 
@@ -140,11 +140,11 @@ void main() {
       expect(usbEvent1.toJson(), event1.toJson());
 
       Map<String, dynamic> msg2 = device.toJson();
-      msg2["event"] = UsbEvent.ACTION_USB_ATTACHED;
+      msg2["event"] = FUWEvent.ACTION_USB_ATTACHED;
 
-      var event2 = UsbEvent();
+      var event2 = FUWEvent();
       event2.device = device;
-      event2.event = UsbEvent.ACTION_USB_ATTACHED;
+      event2.event = FUWEvent.ACTION_USB_ATTACHED;
 
       controller.add(msg2);
 

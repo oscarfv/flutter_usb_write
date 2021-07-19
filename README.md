@@ -89,7 +89,7 @@ First, you'll probably want to list all USB devices connected to you Android dev
 
 ```dart
 try {
-      List<UsbDevice> devices = await _flutterUsbPos.listDevices();
+      List<FUWDevice> devices = await _flutterUsbPos.listDevices();
     } on PlatformException catch (e) {
       print(e.message);
     }
@@ -97,9 +97,9 @@ try {
 
 Once you found the device, you'll need to open connection before attempting to write.
 Each time you open connection device will get new deviceId. 
-To open connection always use vid:pid parameters, method will return new ```UsbDevice``` object with ```deviceId``` value.
+To open connection always use vid:pid parameters, method will return new ```FUWDevice``` object with ```deviceId``` value.
 ```dart
-  Future<UsbDevice> _connect(UsbDevice device) async {
+  Future<FUWDevice> _connect(FUWDevice device) async {
     try {
       var result = await _flutterUsbPos.open(
         vendorId: device.vid,
