@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:flutter_usb_write/flutter_usb_write.dart';
-import 'package:pedantic/pedantic.dart';
 
 void main() => runApp(MyApp());
 
@@ -57,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         if (event.event.endsWith("USB_DEVICE_DETACHED")) {
           //check if connected device was detached
           if (event.device.deviceId == _connectedDeviceId) {
-            unawaited(_disconnect());
+            _disconnect();
           }
         }
       });
