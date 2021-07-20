@@ -2,7 +2,8 @@
 
 Write raw data to USB device on Android.
 
-Unlike [USB Serial]() plugin, this plugin DOES NOT use serial protocol.
+Unlike [USB Serial](https://pub.dev/packages/usb_serial) plugin, this
+plugin DOES NOT use serial protocol.
 
 For example this can be use to print on USB POS printer by sending ESC\POS bytes.
 
